@@ -30,6 +30,10 @@ Timaline is a requestAnimationFrame based tasks scheduler.
 
 [![NPM](https://nodei.co/npm/Timaline.png?mini=true)](https://www.npmjs.com/package/timaline>)
 
+### Demo
+
+[Test timaline in your browser](https://tonicdev.com/npm/timaline)
+
 ### Features
 
 - Set callback functions
