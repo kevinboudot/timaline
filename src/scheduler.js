@@ -3,7 +3,7 @@
 
 // Require Ticker
 
-var Ticker = require('./Ticker.js');
+var Ticker = require('./ticker.js');
 
 
 // Create Scheduler

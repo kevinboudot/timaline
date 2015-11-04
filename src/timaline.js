@@ -3,7 +3,7 @@
 
 // Require Scheduler
 
-var Scheduler = require('./Scheduler.js');
+var Scheduler = require('./scheduler.js');
 
 
 // Create Timaline
