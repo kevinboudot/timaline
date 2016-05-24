@@ -3,12 +3,12 @@
 
 // Require Scheduler
 
-var Scheduler = require('./scheduler.js');
+var Scheduler = require( './scheduler.js' );
 
 
 // Create Timaline
 
-function Timaline(options) {
+function Timaline( options ) {
 
 	options = options ? options : {};
 
@@ -18,7 +18,7 @@ function Timaline(options) {
 	};
 
 	this.delay = 0;
-	this.scheduler = new Scheduler(this.options);
+	this.scheduler = new Scheduler( this.options );
 }
 
 /**
@@ -27,8 +27,8 @@ function Timaline(options) {
  * @param {function} callback
  */
 
-Timaline.prototype.set = function(callback){
-	this.scheduler.add(callback, this.delay);
+Timaline.prototype.set = function( callback ) {
+	this.scheduler.add( callback, this.delay );
 	return this;
 };
 
@@ -39,8 +39,8 @@ Timaline.prototype.set = function(callback){
  * @param {integer} delay
  */
 
-Timaline.prototype.wait = function(delay){
-	this.delay += (delay * this.options.speed);
+Timaline.prototype.wait = function( delay ) {
+	this.delay += ( delay * this.options.speed );
 	return this;
 };
 
@@ -52,11 +52,11 @@ Timaline.prototype.wait = function(delay){
  * @param {string} className
  */
 
-Timaline.prototype.addClass = function(el, className){
-	this.set(function(){
-		var classList = el.classList || el[0].classList;
-		classList.add(className);
-	});
+Timaline.prototype.addClass = function( el, className ) {
+	this.set( function() {
+		var classList = el.classList || el[ 0 ].classList;
+		classList.add( className );
+	} );
 	return this;
 };
 
@@ -68,11 +68,11 @@ Timaline.prototype.addClass = function(el, className){
  * @param {string} className
  */
 
-Timaline.prototype.removeClass = function(el, className){
-	this.set(function(){
-		var classList = el.classList || el[0].classList;
-		classList.remove(className);
-	});
+Timaline.prototype.removeClass = function( el, className ) {
+	this.set( function() {
+		var classList = el.classList || el[ 0 ].classList;
+		classList.remove( className );
+	} );
 	return this;
 };
 
@@ -81,7 +81,7 @@ Timaline.prototype.removeClass = function(el, className){
  * destroy() cancel remove all scheduled tasks
  */
 
-Timaline.prototype.destroy = function(){
+Timaline.prototype.destroy = function() {
 	this.scheduler.destroy();
 };
 

@@ -3,12 +3,12 @@
 
 // Require RAF
 
-var Raf = require('raf');
+var Raf = require( 'raf' );
 
 
 // Create Ticker
 
-function Ticker(){
+function Ticker() {
 	this.instance = null;
 	this.tickers = [];
 }
@@ -23,13 +23,13 @@ function Ticker(){
  * @return {Function} ticker
  */
 
-Ticker.prototype.start = function(ticker){
+Ticker.prototype.start = function( ticker ) {
 
-	if(!this.tickers.length){
+	if ( !this.tickers.length ) {
 		this._process();
 	}
 
-	this.tickers.push(ticker);
+	this.tickers.push( ticker );
 
 };
 
@@ -40,12 +40,12 @@ Ticker.prototype.start = function(ticker){
  * @return {Function} ticker
  */
 
-Ticker.prototype.end = function(ticker){
+Ticker.prototype.end = function( ticker ) {
 
-	this.tickers.splice(this.tickers.indexOf(ticker), 1);
+	this.tickers.splice( this.tickers.indexOf( ticker ), 1 );
 
-	if(!this.tickers.length){
-		Raf.cancel(this.instance);
+	if ( !this.tickers.length ) {
+		Raf.cancel( this.instance );
 	}
 
 };
@@ -58,14 +58,14 @@ Ticker.prototype.end = function(ticker){
  * _process() is the RAF Handler
  */
 
-Ticker.prototype._process = function(currentTime){
+Ticker.prototype._process = function( currentTime ) {
 
-	this.instance = Raf(this._process.bind(this));
+	this.instance = Raf( this._process.bind( this ) );
 
 	var i = this.tickers.length;
 
-	while(i--){
-		this.tickers[i](currentTime);
+	while ( i-- ) {
+		this.tickers[ i ]( currentTime );
 	}
 
 };

@@ -3,12 +3,12 @@
 
 // Require Ticker
 
-var Ticker = require('./ticker.js');
+var Ticker = require( './ticker.js' );
 
 
 // Create Scheduler
 
-function Scheduler(options) {
+function Scheduler( options ) {
 	this.options = options;
 	this.infos = {};
 	this.isProcessing = false;
@@ -32,17 +32,17 @@ function Scheduler(options) {
  * @return {Integer} delay (time in millisecond)
  */
 
-Scheduler.prototype.add = function(callback, delay){
+Scheduler.prototype.add = function( callback, delay ) {
 
-	this.tasks.queue.push({
+	this.tasks.queue.push( {
 		callback: callback,
 		delay: delay,
 		index: this.taskCount++
-	});
+	} );
 
-	if(!this.isProcessing){
-		this.bound = this._tick.bind(this);
-		Ticker.start(this.bound);
+	if ( !this.isProcessing ) {
+		this.bound = this._tick.bind( this );
+		Ticker.start( this.bound );
 		this.isProcessing = true;
 	}
 
@@ -53,12 +53,12 @@ Scheduler.prototype.add = function(callback, delay){
  * destroy() remove all scheduled tasks
  */
 
-Scheduler.prototype.destroy = function(){
+Scheduler.prototype.destroy = function() {
 
 	this.tasks.queue = [];
 
-	if(this.isProcessing){
-		Ticker.end(this.bound);
+	if ( this.isProcessing ) {
+		Ticker.end( this.bound );
 		this.isProcessing = false;
 	}
 
@@ -72,17 +72,17 @@ Scheduler.prototype.destroy = function(){
  *
  */
 
-Scheduler.prototype._onComplete = function(){
+Scheduler.prototype._onComplete = function() {
 
-	if(this.options.repeat !== this.queueCount){
+	if ( this.options.repeat !== this.queueCount ) {
 
 		var i = this.tasks.check.length;
 
-		while(i--){
+		while ( i-- ) {
 
-			var task = this.tasks.check[i];
+			var task = this.tasks.check[ i ];
 			task.startTime = null;
-			this.tasks.queue.push(task);
+			this.tasks.queue.push( task );
 		}
 
 		this.queueCount++;
@@ -99,16 +99,16 @@ Scheduler.prototype._onComplete = function(){
  * _tick() is the RAF Handler
  */
 
-Scheduler.prototype._tick = function(currentTime){
+Scheduler.prototype._tick = function( currentTime ) {
 
 	// Save Timing infos
 
-	this._saveInfos(currentTime);
+	this._saveInfos( currentTime );
 
 	// Loop queue
 
-	if(this.infos.delta){
-		this._loopQueue(currentTime);
+	if ( this.infos.delta ) {
+		this._loopQueue( currentTime );
 	}
 
 };
@@ -120,14 +120,14 @@ Scheduler.prototype._tick = function(currentTime){
  * @return {Integer} currentTime (time in millisecond)
  */
 
-Scheduler.prototype._saveInfos = function(currentTime){
+Scheduler.prototype._saveInfos = function( currentTime ) {
 
-	if (!this.infos.last){
+	if ( !this.infos.last ) {
 		this.infos.last = currentTime;
 	} else {
 		this.infos.delta = currentTime - this.infos.last;
 		this.infos.last = currentTime;
-		this.infos.fps = 1 / (this.infos.delta / 1000);
+		this.infos.fps = 1 / ( this.infos.delta / 1000 );
 	}
 
 };
@@ -140,39 +140,43 @@ Scheduler.prototype._saveInfos = function(currentTime){
  * @return {Integer} currentTime (time in millisecond)
  */
 
-Scheduler.prototype._loopQueue = function(currentTime){
+Scheduler.prototype._loopQueue = function( currentTime ) {
 
 	var i = this.tasks.queue.length;
 
-	while (i--){
+	while ( i-- ) {
 
 		// Get current task
 
-		var task = this.tasks.queue[i];
+		var task = this.tasks.queue[ i ];
 
-		// Save task start time if not exist
+		if ( task ) {
 
-		if (!task.startTime){
-			task.startTime = currentTime;
-		}
+			// Save task start time if not exist
 
-		// Predict task end time by delay
+			if ( !task.startTime ) {
+				task.startTime = currentTime;
+			}
 
-		task.endTime = task.startTime + task.delay;
+			// Predict task end time by delay
 
-		// get adjusted endTime because of delta difference
+			task.endTime = task.startTime + task.delay;
 
-		task.adjustedTime = (task.endTime - (this.infos.delta / 2));
+			// get adjusted endTime because of delta difference
 
-		// If Delay Time is elapsed
+			task.adjustedTime = ( task.endTime - ( this.infos.delta / 2 ) );
 
-		if (currentTime >= task.adjustedTime){
+			// If Delay Time is elapsed
 
-			// Save Timeshift after adjustment
+			if ( currentTime >= task.adjustedTime ) {
 
-			task.timeShift = currentTime - task.endTime;
+				// Save Timeshift after adjustment
 
-			this._processTask(task);
+				task.timeShift = currentTime - task.endTime;
+
+				this._processTask( task );
+
+			}
 
 		}
 
@@ -187,7 +191,7 @@ Scheduler.prototype._loopQueue = function(currentTime){
  * @return {Object} task
  */
 
-Scheduler.prototype._prepareResponse = function(task){
+Scheduler.prototype._prepareResponse = function( task ) {
 
 	var response = {
 		keyframe: {
@@ -209,25 +213,25 @@ Scheduler.prototype._prepareResponse = function(task){
  * @return {Object} task
  */
 
-Scheduler.prototype._processTask = function(task){
+Scheduler.prototype._processTask = function( task ) {
 
-	var response = this._prepareResponse(task);
+	var response = this._prepareResponse( task );
 
 	// Launch Callback
 
-	task.callback(response);
+	task.callback( response );
 
 	// Add task to checked task
 
-	this.tasks.check.push(task);
+	this.tasks.check.push( task );
 
 	// Remove this processed task from tasks queue
 
-	this.tasks.queue.splice(this.tasks.queue.indexOf(task), 1);
+	this.tasks.queue.splice( this.tasks.queue.indexOf( task ), 1 );
 
 	// No more tasks in queue ?
 
-	if(!this.tasks.queue.length){
+	if ( !this.tasks.queue.length ) {
 		this._onComplete();
 	}
 
