@@ -28,7 +28,6 @@ const Ticker = function() {
 
 Ticker.prototype.setOptions = function( options ) {
 	this.raf = options.raf
-	console.log( 'raf: ' + this.raf )
 }
 
 
