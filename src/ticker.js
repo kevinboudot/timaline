@@ -1,20 +1,35 @@
-'use strict';
+'use strict'
 
 
 // Require RAF
 
-var Raf = require( 'raf' );
+const Raf = require( 'raf' )
 
 
 // Create Ticker
 
-function Ticker() {
-	this.instance = null;
-	this.tickers = [];
+const Ticker = function() {
+	this.instance = null
+	this.lostTime = 0
+	this.blurTime = 0
+	this.tickers = []
+	this.raf = false
+	this._observe()
 }
 
 
 // Public
+
+/**
+ * setOptions()
+ *
+ * @return {Function} ticker
+ */
+
+Ticker.prototype.setOptions = function( options ) {
+	this.raf = options.raf
+	console.log( 'raf: ' + this.raf )
+}
 
 
 /**
@@ -26,12 +41,12 @@ function Ticker() {
 Ticker.prototype.start = function( ticker ) {
 
 	if ( !this.tickers.length ) {
-		this._process();
+		this._process()
 	}
 
-	this.tickers.push( ticker );
+	this.tickers.push( ticker )
 
-};
+}
 
 
 /**
@@ -42,16 +57,49 @@ Ticker.prototype.start = function( ticker ) {
 
 Ticker.prototype.end = function( ticker ) {
 
-	this.tickers.splice( this.tickers.indexOf( ticker ), 1 );
+	this.tickers.splice( this.tickers.indexOf( ticker ), 1 )
 
-	if ( !this.tickers.length ) {
-		Raf.cancel( this.instance );
+	if ( this.raf ) {
+
+		if ( !this.tickers.length ) {
+			Raf.cancel( this.instance )
+		}
+
 	}
 
-};
+}
+
+
+/**
+ * update() update with custom loop
+ *
+ */
+
+Ticker.prototype.update = function( time ) {
+
+	this._process( time )
+
+}
 
 
 // Private
+
+/**
+ * _observe() to check document visibility state
+ */
+
+Ticker.prototype._observe = function( currentTime ) {
+	document.addEventListener( 'visibilitychange', () => {
+		if ( document.visibilityState === 'hidden' ) {
+			this.blurTime = Date.now()
+		}
+		if ( document.visibilityState === 'visible' ) {
+			const now = Date.now()
+			this.lostTime += ( now - this.blurTime )
+			this.blurTime = 0
+		}
+	} )
+}
 
 
 /**
@@ -60,17 +108,19 @@ Ticker.prototype.end = function( ticker ) {
 
 Ticker.prototype._process = function( currentTime ) {
 
-	this.instance = Raf( this._process.bind( this ) );
-
-	var i = this.tickers.length;
-
-	while ( i-- ) {
-		this.tickers[ i ]( currentTime );
+	if ( this.raf ) {
+		this.instance = Raf( this._process.bind( this ) )
 	}
 
-};
+	let i = this.tickers.length
+
+	while ( i-- ) {
+		this.tickers[ i ]( currentTime - this.lostTime )
+	}
+
+}
 
 
 // Wrap as a module
 
-module.exports = new Ticker();
+module.exports = new Ticker()

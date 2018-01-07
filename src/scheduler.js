@@ -1,24 +1,25 @@
-'use strict';
+'use strict'
 
 
 // Require Ticker
 
-var Ticker = require( './ticker.js' );
+const Ticker = require( './ticker.js' )
 
 
 // Create Scheduler
 
-function Scheduler( options ) {
-	this.options = options;
-	this.infos = {};
-	this.isProcessing = false;
+const Scheduler = function( options ) {
+	this.options = options
+	this.infos = {}
+	this.isProcessing = false
 	this.tasks = {
 		queue: [],
 		check: []
-	};
-	this.taskCount = 0;
-	this.queueCount = 0;
-	this.bound = null;
+	}
+	this.taskCount = 0
+	this.queueCount = 0
+	this.bound = null
+	Ticker.setOptions( this.options )
 }
 
 
@@ -35,18 +36,26 @@ function Scheduler( options ) {
 Scheduler.prototype.add = function( callback, delay ) {
 
 	this.tasks.queue.push( {
-		callback: callback,
-		delay: delay,
+		callback,
+		delay,
 		index: this.taskCount++
-	} );
+	} )
 
 	if ( !this.isProcessing ) {
-		this.bound = this._tick.bind( this );
-		Ticker.start( this.bound );
-		this.isProcessing = true;
+		this.bound = this._tick.bind( this )
+		Ticker.start( this.bound )
+		this.isProcessing = true
 	}
 
-};
+}
+
+/**
+ * update() update with custom loop
+ */
+
+Scheduler.prototype.update = function( time ) {
+	Ticker.update( time )
+}
 
 
 /**
@@ -55,14 +64,14 @@ Scheduler.prototype.add = function( callback, delay ) {
 
 Scheduler.prototype.destroy = function() {
 
-	this.tasks.queue = [];
+	this.tasks.queue = []
 
 	if ( this.isProcessing ) {
-		Ticker.end( this.bound );
-		this.isProcessing = false;
+		Ticker.end( this.bound )
+		this.isProcessing = false
 	}
 
-};
+}
 
 
 // Private
@@ -76,22 +85,22 @@ Scheduler.prototype._onComplete = function() {
 
 	if ( this.options.repeat !== this.queueCount ) {
 
-		var i = this.tasks.check.length;
+		let i = this.tasks.check.length
 
 		while ( i-- ) {
 
-			var task = this.tasks.check[ i ];
-			task.startTime = null;
-			this.tasks.queue.push( task );
+			const task = this.tasks.check[ i ]
+			task.startTime = null
+			this.tasks.queue.push( task )
 		}
 
-		this.queueCount++;
+		this.queueCount++
 
 	} else {
-		this.destroy();
+		this.destroy()
 	}
 
-};
+}
 
 
 
@@ -103,15 +112,15 @@ Scheduler.prototype._tick = function( currentTime ) {
 
 	// Save Timing infos
 
-	this._saveInfos( currentTime );
+	this._saveInfos( currentTime )
 
 	// Loop queue
 
 	if ( this.infos.delta ) {
-		this._loopQueue( currentTime );
+		this._loopQueue( currentTime )
 	}
 
-};
+}
 
 
 /**
@@ -123,14 +132,14 @@ Scheduler.prototype._tick = function( currentTime ) {
 Scheduler.prototype._saveInfos = function( currentTime ) {
 
 	if ( !this.infos.last ) {
-		this.infos.last = currentTime;
+		this.infos.last = currentTime
 	} else {
-		this.infos.delta = currentTime - this.infos.last;
-		this.infos.last = currentTime;
-		this.infos.fps = 1 / ( this.infos.delta / 1000 );
+		this.infos.delta = currentTime - this.infos.last
+		this.infos.last = currentTime
+		this.infos.fps = 1 / ( this.infos.delta / 1000 )
 	}
 
-};
+}
 
 
 /**
@@ -142,29 +151,29 @@ Scheduler.prototype._saveInfos = function( currentTime ) {
 
 Scheduler.prototype._loopQueue = function( currentTime ) {
 
-	var i = this.tasks.queue.length;
+	let i = this.tasks.queue.length
 
 	while ( i-- ) {
 
 		// Get current task
 
-		var task = this.tasks.queue[ i ];
+		const task = this.tasks.queue[ i ]
 
 		if ( task ) {
 
 			// Save task start time if not exist
 
 			if ( !task.startTime ) {
-				task.startTime = currentTime;
+				task.startTime = currentTime
 			}
 
 			// Predict task end time by delay
 
-			task.endTime = task.startTime + task.delay;
+			task.endTime = task.startTime + task.delay
 
 			// get adjusted endTime because of delta difference
 
-			task.adjustedTime = ( task.endTime - ( this.infos.delta / 2 ) );
+			task.adjustedTime = ( task.endTime - ( this.infos.delta / 2 ) )
 
 			// If Delay Time is elapsed
 
@@ -172,9 +181,9 @@ Scheduler.prototype._loopQueue = function( currentTime ) {
 
 				// Save Timeshift after adjustment
 
-				task.timeShift = currentTime - task.endTime;
+				task.timeShift = currentTime - task.endTime
 
-				this._processTask( task );
+				this._processTask( task )
 
 			}
 
@@ -182,7 +191,7 @@ Scheduler.prototype._loopQueue = function( currentTime ) {
 
 	}
 
-};
+}
 
 
 /**
@@ -193,18 +202,18 @@ Scheduler.prototype._loopQueue = function( currentTime ) {
 
 Scheduler.prototype._prepareResponse = function( task ) {
 
-	var response = {
+	const response = {
 		keyframe: {
 			forecast: task.delay,
 			real: task.delay + task.timeShift,
 			shift: task.timeShift
 		},
 		index: task.index
-	};
+	}
 
-	return response;
+	return response
 
-};
+}
 
 
 /**
@@ -215,29 +224,29 @@ Scheduler.prototype._prepareResponse = function( task ) {
 
 Scheduler.prototype._processTask = function( task ) {
 
-	var response = this._prepareResponse( task );
+	const response = this._prepareResponse( task )
 
 	// Launch Callback
 
-	task.callback( response );
+	task.callback( response )
 
 	// Add task to checked task
 
-	this.tasks.check.push( task );
+	this.tasks.check.push( task )
 
 	// Remove this processed task from tasks queue
 
-	this.tasks.queue.splice( this.tasks.queue.indexOf( task ), 1 );
+	this.tasks.queue.splice( this.tasks.queue.indexOf( task ), 1 )
 
 	// No more tasks in queue ?
 
 	if ( !this.tasks.queue.length ) {
-		this._onComplete();
+		this._onComplete()
 	}
 
-};
+}
 
 
 // Wrap as a module
 
-module.exports = Scheduler;
+module.exports = Scheduler

@@ -1,24 +1,25 @@
-'use strict';
+'use strict'
 
 
 // Require Scheduler
 
-var Scheduler = require( './scheduler.js' );
+const Scheduler = require( './scheduler.js' )
 
 
 // Create Timaline
 
-function Timaline( options ) {
+const Timaline = function( options ) {
 
-	options = options ? options : {};
+	options = options ? options : {}
 
 	this.options = {
+		raf: options.raf !== false,
 		speed: options.speed ? options.speed : 1,
 		repeat: options.repeat ? options.repeat : 0
-	};
+	}
 
-	this.delay = 0;
-	this.scheduler = new Scheduler( this.options );
+	this.delay = 0
+	this.scheduler = new Scheduler( this.options )
 }
 
 /**
@@ -28,9 +29,9 @@ function Timaline( options ) {
  */
 
 Timaline.prototype.set = function( callback ) {
-	this.scheduler.add( callback, this.delay );
-	return this;
-};
+	this.scheduler.add( callback, this.delay )
+	return this
+}
 
 
 /**
@@ -40,9 +41,9 @@ Timaline.prototype.set = function( callback ) {
  */
 
 Timaline.prototype.wait = function( delay ) {
-	this.delay += ( delay * this.options.speed );
-	return this;
-};
+	this.delay += ( delay * this.options.speed )
+	return this
+}
 
 
 /**
@@ -54,11 +55,11 @@ Timaline.prototype.wait = function( delay ) {
 
 Timaline.prototype.addClass = function( el, className ) {
 	this.set( function() {
-		var classList = el.classList || el[ 0 ].classList;
-		classList.add( className );
-	} );
-	return this;
-};
+		const classList = el.classList || el[ 0 ].classList
+		classList.add( className )
+	} )
+	return this
+}
 
 
 /**
@@ -70,11 +71,20 @@ Timaline.prototype.addClass = function( el, className ) {
 
 Timaline.prototype.removeClass = function( el, className ) {
 	this.set( function() {
-		var classList = el.classList || el[ 0 ].classList;
-		classList.remove( className );
-	} );
-	return this;
-};
+		const classList = el.classList || el[ 0 ].classList
+		classList.remove( className )
+	} )
+	return this
+}
+
+
+/**
+ * update() update with custom loop
+ */
+
+Timaline.prototype.update = function( time ) {
+	this.scheduler.update( time )
+}
 
 
 /**
@@ -82,10 +92,10 @@ Timaline.prototype.removeClass = function( el, className ) {
  */
 
 Timaline.prototype.destroy = function() {
-	this.scheduler.destroy();
-};
+	this.scheduler.destroy()
+}
 
 
 // Wrap as a module
 
-module.exports = Timaline;
+module.exports = Timaline

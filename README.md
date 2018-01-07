@@ -15,13 +15,16 @@ Timaline is a requestAnimationFrame based tasks scheduler.
 	* [Simple task](#simple-task)
 	* [Chained tasks](#chained-tasks)
 	* [Shortcuts use](#shortcuts-use)
+	* [Update manually](#update-manually)
 	* [Destroy on the fly](#destroy-on-the-fly)
 
 ### To Do
 
 - [x] Reduce RAF Delta impact by "prev or next" frame
 - [x] Speed
-- [x] repeat
+- [x] Repeat
+- [x] User custom loop (manually update)
+- [x] Disable RAF when web page is not active
 - [ ] Playback control
 - [ ] RAF Delta impact reducing by average calculation
 - [ ] Reduce RAF Delta aftereffect
@@ -43,6 +46,8 @@ Timaline is a requestAnimationFrame based tasks scheduler.
 - Destroy everything
 - Control speed
 - Control repeat
+- Update manually
+- Pause when tab is not visible
 
 ### Browser compatibility
 
@@ -58,13 +63,14 @@ var Timaline = require('Timaline');
 
 ### Options
 
-You can pass 2 options to constructor, and you can combine them :
+You can pass 3 options to constructor, and you can combine them :
 
 ```js
 
 var timeline = new Timaline({
-	speed: 0.5,
-	repeat: 3
+	loop: false, // default : true
+	speed: 0.5, // default : 1
+	repeat: 3 // default : 0
 });
 ```
 
@@ -215,6 +221,29 @@ hidePage
 	.set(function(infos){
 		console.log('That\'s all folks!');
 	});
+```
+
+#### Update manually
+
+This example show how to update Timaline with your own loop :
+
+```js
+var delay = new Timaline({
+	raf: false
+});
+
+function loop( timestamp ) {
+	delay.update( timestamp );
+	requestAnimationFrame( loop );
+}
+
+requestAnimationFrame( loop );
+
+delay
+	.wait(200)
+		.set(function(infos){
+			console.log(infos);
+		});
 ```
 
 #### Destroy on the fly

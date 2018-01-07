@@ -1,7 +1,7 @@
 {
     "name": "timaline",
     "description": "timaline is a requestAnimationFrame based tasks scheduler.",
-    "version": "0.0.18",
+    "version": "0.0.19",
     "author": "Kevin Boudot <kevin.boudot@gmail.com> (http://www.kevinboudot.me/)",
     "license": "MIT",
     "main": "src/timaline.js",
@@ -24,6 +24,6 @@
         "repeat"
     ],
     "dependencies": {
-        "raf": "^3.1.0"
+        "raf": "^3.4.0"
     }
 }
