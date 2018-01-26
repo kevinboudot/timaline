@@ -36,8 +36,8 @@ const Scheduler = function( options ) {
 Scheduler.prototype.add = function( callback, delay ) {
 
 	this.tasks.queue.push( {
-		callback,
-		delay,
+		callback: callback,
+		delay: delay,
 		index: this.taskCount++
 	} )
 
