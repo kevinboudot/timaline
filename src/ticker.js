@@ -88,7 +88,7 @@ Ticker.prototype.update = function( time ) {
  */
 
 Ticker.prototype._observe = function( currentTime ) {
-	document.addEventListener( 'visibilitychange', () => {
+	document.addEventListener( 'visibilitychange', function() {
 		if ( document.visibilityState === 'hidden' ) {
 			this.blurTime = Date.now()
 		}
